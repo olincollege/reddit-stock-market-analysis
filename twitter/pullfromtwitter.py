@@ -20,6 +20,8 @@ client = tweepy.Client(BEARER_TOKEN)
 # tweets from a specific user
 user = client.get_user(username = 'elonmusk')
 
+
+
 elon_tweets = client.get_users_tweets(44196397)
 for tweet in elon_tweets:
     print(tweet)

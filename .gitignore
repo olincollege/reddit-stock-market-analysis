@@ -130,5 +130,5 @@ dmypy.json
 
 
 # Our files (security)
-/twitter/makesecurekey.py
-/twitter/twitter_credentials.json
+twitter/makesecurekeys.py
+twitter/twitter_credentials.json
