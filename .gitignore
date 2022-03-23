@@ -134,3 +134,4 @@ twitter/makesecurekeys.py
 twitter/twitter_credentials.json
 stock_info/alpaca_credentials.json
 stock_info/makesecurekeys.py
+reddit/reddit_credentials.json
