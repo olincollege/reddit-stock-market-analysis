@@ -1,8 +1,9 @@
 import requests
 import json
 import pandas as pd
+import datetime
 
-with open("reddit/reddit_credentials.json", "r") as file:
+with open("reddit_credentials.json", "r") as file:
     creds = json.load(file)
 
 APCA_API_KEY_ID = creds['CLIENT_ID']
@@ -21,11 +22,11 @@ data = {'grant_type': 'password',
 headers = {'User-Agent': 'MyBot/0.0.1'}
 
 # send our request for an OAuth token
-res = requests.posaccess_tokent('https://www.reddit.com/api/v1/access_token',
-                                auth=auth, data=data, headers=headers)
+res = requests.post('https://www.reddit.com/api/v1/access_token',
+                    auth=auth, data=data, headers=headers)
 
 # convert response to JSON and pull access_token value
-TOKEN = res.json()['']
+TOKEN = res.json()['access_token']
 
 # add authorization to our headers dictionary
 headers = {**headers, **{'Authorization': f"bearer {TOKEN}"}}
@@ -43,21 +44,24 @@ df = pd.DataFrame()  # initialize dataframe
 # loop through each post retrieved from GET request
 for post in res.json()['data']['children']:
     # append relevant data to dataframe
+    #print(json.dumps(post, indent=4))
+    # print(post['data']['created'])
+
     df = pd.concat(
         [df, pd.DataFrame({'subreddit': [post['data']['subreddit']],
                            'title': [post['data']['title']],
-                           'selftext': [post['data']['selftext']]})])
-    # 'subreddit': post['data']['subreddit'],
-    # 'title': post['data']['title'],
-    # 'selftext': post['data']['selftext']
-    # 'upvote_ratio': post['data']['upvote_ratio'],
-    # 'ups': post['data']['ups'],
-    # 'downs': post['data']['downs'],
-    # 'score': post['data']['score']
-    # }, ignore_index=True)
-print(type(df))
-print(df)
-# print(df)
+                           'selftext': [post['data']['selftext']],
+                           'time': [datetime.datetime.fromtimestamp(
+                               post['data']['created'])]})])
+# 'subreddit': post['data']['subreddit'],
+# 'title': post['data']['title'],
+# 'selftext': post['data']['selftext']
+# 'upvote_ratio': post['data']['upvote_ratio'],
+# 'ups': post['data']['ups'],
+# 'downs': post['data']['downs'],
+# 'score': post['data']['score']
+# }, ignore_index=True)
+# print(post)
 # with open("reddit/wallstreetbets_info.json", "w") as file:
 #     json.dump(df, file)
-df.to_csv("reddit/reddit_posts.csv")
+df.to_csv("reddit_posts.csv")
