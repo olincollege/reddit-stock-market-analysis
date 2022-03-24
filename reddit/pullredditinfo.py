@@ -21,11 +21,11 @@ data = {'grant_type': 'password',
 headers = {'User-Agent': 'MyBot/0.0.1'}
 
 # send our request for an OAuth token
-res = requests.post('https://www.reddit.com/api/v1/access_token',
-                    auth=auth, data=data, headers=headers)
+res = requests.posaccess_tokent('https://www.reddit.com/api/v1/access_token',
+                                auth=auth, data=data, headers=headers)
 
 # convert response to JSON and pull access_token value
-TOKEN = res.json()['access_token']
+TOKEN = res.json()['']
 
 # add authorization to our headers dictionary
 headers = {**headers, **{'Authorization': f"bearer {TOKEN}"}}
