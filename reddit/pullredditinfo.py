@@ -7,6 +7,7 @@ with open("reddit/reddit_credentials.json", "r") as file:
 
 APCA_API_KEY_ID = creds['CLIENT_ID']
 APCA_API_SECRET_KEY = creds['CLIENT_SECRET']
+password = creds['PASSWORD']
 
 # note that CLIENT_ID refers to 'personal use script' and SECRET_TOKEN to 'token'
 auth = requests.auth.HTTPBasicAuth(APCA_API_KEY_ID, APCA_API_SECRET_KEY)
@@ -14,7 +15,7 @@ auth = requests.auth.HTTPBasicAuth(APCA_API_KEY_ID, APCA_API_SECRET_KEY)
 # here we pass our login method (password), username, and password
 data = {'grant_type': 'password',
         'username': 'lilaoshidezhongwenke',
-        'password': 'shamama123'}
+        'password': password}
 
 # setup our header info, which gives reddit a brief description of our app
 headers = {'User-Agent': 'MyBot/0.0.1'}
@@ -42,16 +43,21 @@ df = pd.DataFrame()  # initialize dataframe
 # loop through each post retrieved from GET request
 for post in res.json()['data']['children']:
     # append relevant data to dataframe
-    df = df.append({
-        'subreddit': post['data']['subreddit'],
-        'title': post['data']['title'],
-        'selftext': post['data']['selftext'],
-        # 'upvote_ratio': post['data']['upvote_ratio'],
-        # 'ups': post['data']['ups'],
-        # 'downs': post['data']['downs'],
-        # 'score': post['data']['score']
-    }, ignore_index=True)
-print(df['selftext'][3])
+    df = pd.concat(
+        [df, pd.DataFrame({'subreddit': [post['data']['subreddit']],
+                           'title': [post['data']['title']],
+                           'selftext': [post['data']['selftext']]})])
+    # 'subreddit': post['data']['subreddit'],
+    # 'title': post['data']['title'],
+    # 'selftext': post['data']['selftext']
+    # 'upvote_ratio': post['data']['upvote_ratio'],
+    # 'ups': post['data']['ups'],
+    # 'downs': post['data']['downs'],
+    # 'score': post['data']['score']
+    # }, ignore_index=True)
+print(type(df))
+print(df)
 # print(df)
 # with open("reddit/wallstreetbets_info.json", "w") as file:
 #     json.dump(df, file)
+df.to_csv("reddit/reddit_posts.csv")
