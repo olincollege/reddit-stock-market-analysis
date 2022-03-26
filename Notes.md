@@ -13,4 +13,5 @@ How to narrow down r/wallstreetbets posts:
     - look for company name in the post
 - keep posts with a 1-4 character string of uppercase letters (probably a ticker symbol)?
     - search to see if it is a ticker symbol?
-- key words: watch, up, 
+- key words to include: watch, up, deal, buys
+- key words to remove/uncapitalize: government acronyms (US, USPS, EPA, etc.), APES? (appears to be a nickname for investors short selling stocks), SALE, STOCK, CEO, AI, FREE
