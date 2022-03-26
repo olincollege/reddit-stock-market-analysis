@@ -11,3 +11,6 @@ How to narrow down r/wallstreetbets posts:
 - keep posts containing a dollar sign followed by one or more capital letters (usually telling users to invest)
 - keep posts containing a dollar sign followed by a number (usually indicates a merger)
     - look for company name in the post
+- keep posts with a 1-4 character string of uppercase letters (probably a ticker symbol)?
+    - search to see if it is a ticker symbol?
+- key words: watch, up, 
