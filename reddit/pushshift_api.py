@@ -57,4 +57,4 @@ for post in all_data:
                                'title': [post['title']],
                                'selftext': [post['selftext']],
                                'time': [datetime.datetime.fromtimestamp(post['created_utc'])]})])
-print(df)
+df.to_csv("reddit_posts.csv")
