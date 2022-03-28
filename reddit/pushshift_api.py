@@ -4,13 +4,18 @@ import pandas as pd
 import datetime
 
 
-def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now().timestamp())):
+def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now(
+).timestamp())):
     """
-    Gets posts from the given subreddit for the given time period
-    :param sub: the subreddit to retrieve posts from
-    :param beginning: The unix timestamp of when the posts should begin
-    :param end: The unix timestamp of when the posts should end (defaults to right now)
-    :return:
+    Gets posts from the given subreddit for the given time period in json form.
+    
+    Args:
+        sub: A string representing the subreddit to retrieve posts from.
+        beginning: The unix timestamp of when the posts should begin.
+        end: The unix timestamp of when the posts should end (defaults to
+        current time).
+    
+    Returns:
     """
     print("Querying pushshift")
     url = "https://apiv2.pushshift.io/reddit/submission/search/" \
