@@ -1,3 +1,7 @@
+
+**Delete this file before submitting the project**
+
+
 Things to write unit tests for:
 
 - In pull_stock_info.py, make sure timedelta does addition correctly
@@ -15,3 +19,8 @@ How to narrow down r/wallstreetbets posts:
     - search to see if it is a ticker symbol?
 - key words to include: watch, up, deal, buys
 - key words to remove/uncapitalize: government acronyms (US, USPS, EPA, etc.), APES? (appears to be a nickname for investors short selling stocks), SALE, STOCK, CEO, AI, FREE
+
+Questions for Steve:
+What types of functions can we write unit tests for?
+How do we do documentation (docstrings, etc) on the unit tests?
+Do we want to keep intermediate files/functions to show progress?

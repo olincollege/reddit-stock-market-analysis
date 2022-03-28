@@ -1,5 +1,4 @@
 import alpaca_trade_api as tradeapi
-import matplotlib.pyplot as plt
 import pandas as pd
 import json
 from datetime import datetime, timedelta
@@ -35,6 +34,28 @@ def get_alpaca_account():
     account = api.get_account()
     return account
 
+def get_datetime(start_date, time_period):
+    """
+    Convert a start date and number of days to a start and end datetime.
+    
+    Args:
+        start_date: A string containing the first date to pull data for in the
+        format YYYY-MM-DD.
+        time_period: An integer of the number of days to pull data for.
+        
+    Returns:
+        start_date: The datetime at which to begin pulling stock information.
+        end_date: The datetime at which to finish pulling stock information.
+    """
+    start_date = datetime.strptime(start_date, "%Y-%m-%d")
+    
+    # allows the user to call a start date and a set number of days afterward
+    # without having to find the end date manually
+    delta = timedelta(days=time_period)
+    end_date = start_date + delta
+    return [start_date, end_date]
+
+
 def get_stock_info(ticker_symbol, start_date, time_period):
     """
     Creates a CSV file containing the open and close price for the desired
@@ -52,16 +73,11 @@ def get_stock_info(ticker_symbol, start_date, time_period):
         timestamp, open, high, low, close, volume, trade_count, and vwap. It
         appears in the stock_info folder.
     """
-    start_date = datetime.strptime(start_date, "%Y-%m-%d")
-    
-    # allows the user to call a start date and a set number of days afterward
-    # without having to find the end date manually
-    delta = timedelta(days=time_period)
-    end_date = start_date + delta
+    dates = get_datetime(start_date, time_period)
+    start_date = dates[0]
+    end_date = dates[1]
     
     STOCK_DATA = api.get_bars(ticker_symbol, tradeapi.TimeFrame.Day,
                               start_date, end_date, adjustment='raw').df
     STOCK_DATA.to_csv(f'stock_info/{ticker_symbol}data.csv')
     return
-
-
