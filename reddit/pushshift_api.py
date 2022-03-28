@@ -2,6 +2,8 @@ import requests
 import json
 import pandas as pd
 import datetime
+from profanity_filter import ProfanityFilter
+pf = ProfanityFilter()
 
 
 def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now(
@@ -59,7 +61,8 @@ for post in all_data:
     if 'selftext' in post:
         df = pd.concat(
             [df, pd.DataFrame({'subreddit': [post['subreddit']],
-                               'title': [post['title']],
-                               'selftext': [post['selftext']],
-                               'time': [datetime.datetime.fromtimestamp(post['created_utc'])]})])
-df.to_csv("reddit_posts.csv")
+                               'title': [pf.sensor(post['title'])],
+                               'selftext': [pf.sensor(post['selftext'])],
+                               'time': [datetime.datetime.fromtimestamp
+                                        (post['created_utc'])]})])
+df.to_csv("reddit/reddit_posts.csv")
