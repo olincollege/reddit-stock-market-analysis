@@ -21,18 +21,21 @@ def get_alpaca_account():
     APCA_API_KEY_ID = creds['CLIENT_ID']
     APCA_API_SECRET_KEY = creds['CLIENT_SECRET']
 
-    APCA_API_BASE_URL = "https://paper-api.alpaca.markets"
+    APCA_API_BASE_URL = "https://paper-API.alpaca.markets"
     APCA_API_DATA_URL = "https://data.alpaca.markets"
     APCA_RETRY_MAX = 3
     APCA_RETRY_WAIT = 3
     APCA_RETRY_CODES = 429504
 
-    api = tradeapi.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
+    API = tradeapi.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
                         APCA_API_BASE_URL, api_version='v2')
 
 
-    account = api.get_account()
-    return account
+    #account = API.get_account()
+    return API
+
+# Global Constants
+API = get_alpaca_account()
 
 def get_datetime(start_date, time_period):
     """
@@ -47,7 +50,7 @@ def get_datetime(start_date, time_period):
         start_date: The datetime at which to begin pulling stock information.
         end_date: The datetime at which to finish pulling stock information.
     """
-    start_date = datetime.strptime(start_date, "%Y-%m-%d")
+    start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
     
     # allows the user to call a start date and a set number of days afterward
     # without having to find the end date manually
@@ -77,7 +80,7 @@ def get_stock_info(ticker_symbol, start_date, time_period):
     start_date = dates[0]
     end_date = dates[1]
     
-    STOCK_DATA = api.get_bars(ticker_symbol, tradeapi.TimeFrame.Day,
+    STOCK_DATA = API.get_bars(ticker_symbol, tradeapi.TimeFrame.Day,
                               start_date, end_date, adjustment='raw').df
     STOCK_DATA.to_csv(f'stock_info/{ticker_symbol}data.csv')
     return

@@ -73,7 +73,7 @@ def make_color_plot(path, ticker_symbol):
                 days_since_epoch(x_coords[index]) + 1))
             y_coords.insert(index + 1, y_coords[index])
 
-    # Make a copy of x_coords_ints that is integers, not date objects
+    # Make a copy of x_coords that is integers, not date objects
     x_coords_ints = np.linspace(epoch_offset, epoch_offset + days_covered,
                                 len(x_coords))
 
@@ -90,7 +90,7 @@ def make_color_plot(path, ticker_symbol):
 
     # Create the line collection object, setting the colormapping parameters.
     # Have to set the actual values used for colormapping separately.
-    line_collection = LineCollection(segments, colormap=colormap, norm=norm)
+    line_collection = LineCollection(segments, cmap=colormap, norm=norm)
     line_collection.set_array(slope)
     line_collection.set_linewidth(2)
 
