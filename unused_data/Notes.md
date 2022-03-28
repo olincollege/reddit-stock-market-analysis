@@ -22,5 +22,8 @@ How to narrow down r/wallstreetbets posts:
 
 Questions for Steve:
 What types of functions can we write unit tests for?
+- Functions that do things, rather than pull web info or graph
 How do we do documentation (docstrings, etc) on the unit tests?
+- Make a docstring for each function and a comment for each case
 Do we want to keep intermediate files/functions to show progress?
+- Make a new folder and don't use it in the computational essay
