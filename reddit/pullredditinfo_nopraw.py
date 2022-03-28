@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import datetime
 
-with open("reddit_credentials.json", "r") as file:
+with open("reddit/reddit_credentials.json", "r") as file:
     creds = json.load(file)
 
 APCA_API_KEY_ID = creds['CLIENT_ID']
@@ -34,7 +34,7 @@ headers = {**headers, **{'Authorization': f"bearer {TOKEN}"}}
 # while the token is valid (~2 hours) we just add headers=headers to our requests
 requests.get('https://oauth.reddit.com/api/v1/me', headers=headers)
 
-res = requests.get("https://oauth.reddit.com/r/wallstreetbets/hot",
+res = requests.get("https://oauth.reddit.com/r/wallstreetbets/top/?t=all",
                    headers=headers)
 
 # for post in res.json()['data']['children']:
@@ -44,15 +44,17 @@ df = pd.DataFrame()  # initialize dataframe
 # loop through each post retrieved from GET request
 for post in res.json()['data']['children']:
     # append relevant data to dataframe
-    #print(json.dumps(post, indent=4))
-    # print(post['data']['created'])
-
+    # print(json.dumps(post, indent=4))
+    # print(str(datetime.datetime.fromtimestamp(post['data']['created'])))
+    # if "2018" in str(datetime.datetime.fromtimestamp(post['data']['created'])):
+    # print(datetime.datetime.fromtimestamp(post['data']['created']))
     df = pd.concat(
         [df, pd.DataFrame({'subreddit': [post['data']['subreddit']],
                            'title': [post['data']['title']],
                            'selftext': [post['data']['selftext']],
                            'time': [datetime.datetime.fromtimestamp(
                                post['data']['created'])]})])
+    # print(post)
 # 'subreddit': post['data']['subreddit'],
 # 'title': post['data']['title'],
 # 'selftext': post['data']['selftext']
@@ -64,4 +66,6 @@ for post in res.json()['data']['children']:
 # print(post)
 # with open("reddit/wallstreetbets_info.json", "w") as file:
 #     json.dump(df, file)
+
+
 df.to_csv("reddit_posts.csv")
