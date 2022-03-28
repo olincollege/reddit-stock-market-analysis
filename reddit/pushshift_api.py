@@ -2,15 +2,22 @@ import requests
 import json
 import pandas as pd
 import datetime
+from profanity_filter import ProfanityFilter
+pf = ProfanityFilter()
 
 
-def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now().timestamp())):
+def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now(
+).timestamp())):
     """
-    Gets posts from the given subreddit for the given time period
-    :param sub: the subreddit to retrieve posts from
-    :param beginning: The unix timestamp of when the posts should begin
-    :param end: The unix timestamp of when the posts should end (defaults to right now)
-    :return:
+    Gets posts from the given subreddit for the given time period in json form.
+    
+    Args:
+        sub: A string representing the subreddit to retrieve posts from.
+        beginning: The unix timestamp of when the posts should begin.
+        end: The unix timestamp of when the posts should end (defaults to
+        current time).
+    
+    Returns:
     """
     print("Querying pushshift")
     url = "https://apiv2.pushshift.io/reddit/submission/search/" \
@@ -54,7 +61,8 @@ for post in all_data:
     if 'selftext' in post:
         df = pd.concat(
             [df, pd.DataFrame({'subreddit': [post['subreddit']],
-                               'title': [post['title']],
-                               'selftext': [post['selftext']],
-                               'time': [datetime.datetime.fromtimestamp(post['created_utc'])]})])
-df.to_csv("reddit_posts.csv")
+                               'title': [pf.sensor(post['title'])],
+                               'selftext': [pf.sensor(post['selftext'])],
+                               'time': [datetime.datetime.fromtimestamp
+                                        (post['created_utc'])]})])
+df.to_csv("reddit/reddit_posts.csv")
