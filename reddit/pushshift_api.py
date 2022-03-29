@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 import datetime
+import re
 from profanity_filter import ProfanityFilter
 pf = ProfanityFilter()
 
@@ -38,7 +39,6 @@ data = get_posts_for_time_period(
     "wallstreetbets", beginning_timestamp, end_timestamp)
 all_data = data
 
-
 while len(data) >= 500:
     # go back for more data
     last_one = data[499]
@@ -57,11 +57,16 @@ for post in all_data:
     # print(str(datetime.datetime.fromtimestamp(post['data']['created'])))
     # if "2018" in str(datetime.datetime.fromtimestamp(post['data']['created'])):
     # print(datetime.datetime.fromtimestamp(post['data']['created']))
-    if 'selftext' in post and "$" in post['selftext'] or "$" in post['title']:
+    # if 'selftext' in post and ("$" in post['selftext'] or "$" in post['title']): 'subreddit': [post['subreddit']],
+    # make list of ticks, dates, good/bad, trigger word
+    # good/bad word dictionary
+    if 'selftext' in post and (re.search(r"^.*\$[A-Z]+", post['title']) or re.search(r"^.*\$[A-Z]+", post['selftext'])):
         df = pd.concat(
-            [df, pd.DataFrame({'subreddit': [post['subreddit']],
-                               'title': [pf.censor(post['title'])],
+            [df, pd.DataFrame({'title': [pf.censor(post['title'])],
                                'selftext': [pf.censor(post['selftext'])],
                                'time': [datetime.datetime.fromtimestamp
-                                        (post['created_utc'])]})])
+                                        (post['created_utc'])],
+                               'tickers': (re.findall(r"^.*\$[A-Z]+$", post['title'])).extend(re.findall(r"^.*\$[A-Z]+$", post['selftext']))})])
+        # df = pd.concat(
+        #     [df, pd.DataFrame({'tickers': (re.findall(r"\$[A-Z]+$", post['title'])).extend(re.findall(r"\$[A-Z]+", post['selftext']))})])
 df.to_csv("reddit/reddit_posts.csv")
