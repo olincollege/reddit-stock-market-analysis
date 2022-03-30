@@ -23,7 +23,7 @@ def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now(
     print("Querying pushshift")
     url = "https://apiv2.pushshift.io/reddit/submission/search/" \
         "?subreddit={0}" \
-        "&limit=500" \
+        "&limit=100" \
         "&after={1}" \
         "&before={2}".format(sub, beginning, end)
 
@@ -54,15 +54,18 @@ end_timestamp = int(datetime.datetime(
 data = get_posts_for_time_period(
     "wallstreetbets", beginning_timestamp, end_timestamp)
 all_data = data
+print(end_timestamp)
+print(beginning_timestamp)
 
-while len(data) >= 500:
+while len(data) >= 100:
     # go back for more data
-    last_one = data[499]
+    last_one = data[len(data)-1]
     beginning_timestamp = last_one['created_utc'] + 1
+    print(last_one['created_utc'])
     data = get_posts_for_time_period(
         sub="wallstreetbets", beginning=beginning_timestamp, end=end_timestamp)
     all_data.extend(data)
-# print(all_data)
+print(len(all_data))
 
 df = pd.DataFrame()  # initialize dataframe
 
@@ -82,7 +85,7 @@ for post in all_data:
         censored_title = post['title']  #pf.censor()
         censored_selftext = post['selftext']
         time = datetime.datetime.fromtimestamp(post['created_utc'])
-        ticker_list = [findall_tickers(post['title'] + post['selftext'])]
+        ticker_list = findall_tickers(post['title'] + post['selftext'])
         #ticker_list = (findall_tickers(post['title'])).extend(
         #               findall_tickers(post['selftext']))
 
@@ -90,7 +93,7 @@ for post in all_data:
             [df, pd.DataFrame({'title': [censored_title],
                                'selftext': [censored_selftext],
                                'time': [time],
-                               'tickers': ticker_list})])
+                               'tickers': [ticker_list]})])
         # df = pd.concat(
         #     [df, pd.DataFrame({'tickers': (re.findall(r"\$[A-Z]+$", post['title'])).extend(re.findall(r"\$[A-Z]+", post['selftext']))})])
 df.to_csv("reddit/reddit_posts.csv")
