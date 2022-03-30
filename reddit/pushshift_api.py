@@ -3,8 +3,8 @@ import json
 import pandas as pd
 import datetime
 import re
-from profanity_filter import ProfanityFilter
-pf = ProfanityFilter()
+#from profanity_filter import ProfanityFilter
+#pf = ProfanityFilter()
 
 
 def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now(
@@ -32,9 +32,25 @@ def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now(
     return resp_json['data']
 
 
+def findall_tickers(string):
+    """
+    Searches a string for stock tickers.
+
+    Args:
+        string: A string to be searched.
+
+    Returns:
+        A list of all the stock tickers in the string.
+    """
+    return re.findall(r"\$([A-Z]+)", string)
+
+
+
 beginning_timestamp = int(datetime.datetime(
     year=2018, month=1, day=1).timestamp())
-end_timestamp = int(datetime.datetime(year=2019, month=1, day=1).timestamp())
+end_timestamp = int(datetime.datetime(
+    year=2019, month=1, day=1).timestamp())
+
 data = get_posts_for_time_period(
     "wallstreetbets", beginning_timestamp, end_timestamp)
 all_data = data
@@ -60,13 +76,21 @@ for post in all_data:
     # if 'selftext' in post and ("$" in post['selftext'] or "$" in post['title']): 'subreddit': [post['subreddit']],
     # make list of ticks, dates, good/bad, trigger word
     # good/bad word dictionary
-    if 'selftext' in post and (re.search(r"^.*\$[A-Z]+", post['title']) or re.search(r"^.*\$[A-Z]+", post['selftext'])):
+    if 'selftext' in post and (findall_tickers(post['title']) or \
+                               findall_tickers(post['selftext'])):
+
+        censored_title = post['title']  #pf.censor()
+        censored_selftext = post['selftext']
+        time = datetime.datetime.fromtimestamp(post['created_utc'])
+        ticker_list = [findall_tickers(post['title'] + post['selftext'])]
+        #ticker_list = (findall_tickers(post['title'])).extend(
+        #               findall_tickers(post['selftext']))
+
         df = pd.concat(
-            [df, pd.DataFrame({'title': [pf.censor(post['title'])],
-                               'selftext': [pf.censor(post['selftext'])],
-                               'time': [datetime.datetime.fromtimestamp
-                                        (post['created_utc'])],
-                               'tickers': (re.findall(r"^.*\$[A-Z]+$", post['title'])).extend(re.findall(r"^.*\$[A-Z]+$", post['selftext']))})])
+            [df, pd.DataFrame({'title': [censored_title],
+                               'selftext': [censored_selftext],
+                               'time': [time],
+                               'tickers': ticker_list})])
         # df = pd.concat(
         #     [df, pd.DataFrame({'tickers': (re.findall(r"\$[A-Z]+$", post['title'])).extend(re.findall(r"\$[A-Z]+", post['selftext']))})])
 df.to_csv("reddit/reddit_posts.csv")
