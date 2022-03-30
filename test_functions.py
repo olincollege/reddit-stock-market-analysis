@@ -1,8 +1,6 @@
-"""
-Test library functions to pull Reddit and Alpaca information, sort for useful
-data, and graph the data.
-"""
 import pytest
+
+# Scraping and analyzing Alpaca data
 
 from stock_info.pull_stock_info import get_datetime
 
