@@ -96,7 +96,7 @@ def make_color_plot(path, ticker_symbol):
 
     # Make the background of the graph white so we can read text
     # in dark mode. Must be first. 
-    plt.figure(facecolor="white")
+    plt.figure(figsize=(12,6), dpi= 100, facecolor="white")
 
     # Add the colored line segments to the graph
     plt.gca().add_collection(line_collection)

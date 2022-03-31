@@ -82,5 +82,5 @@ def get_stock_info(ticker_symbol, start_date, time_period):
     
     STOCK_DATA = API.get_bars(ticker_symbol, tradeapi.TimeFrame.Day,
                               start_date, end_date, adjustment='raw').df
-    STOCK_DATA.to_csv(f'stock_info/{ticker_symbol}data.csv')
+    STOCK_DATA.to_csv(f'stock_info/data/{ticker_symbol}data.csv')
     return
