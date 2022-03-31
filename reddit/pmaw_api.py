@@ -19,6 +19,7 @@ def findall_tickers(string):
     """
     return re.findall(r"\$([A-Z]+)", string)
 
+
 def findall_questions(string):
     """
     Searches a string for stock tickers.
@@ -30,6 +31,7 @@ def findall_questions(string):
         A list of all the stock tickers in the string.
     """
     return re.findall(r"(\?)", string)
+
 
 def str_create_timestamp(date_str):
     """
@@ -43,15 +45,18 @@ def str_create_timestamp(date_str):
         year=year, month=month, day=day).timestamp())
     return timestamp
 
+
 def pull_raw_data(subreddit, limit, beginning_day, end_day):
     """
-    Docstring here
+    Returns:
+        subs_df: A dataframe containing the titles, body text, and date written
+        of Reddit posts.
     """
     beginning_timestamp = str_create_timestamp(beginning_day)
     end_timestamp = str_create_timestamp(end_day)
 
     submissions = api.search_submissions(subreddit=subreddit, limit=limit,
-                            before=end_timestamp, after=beginning_timestamp)
+                                         before=end_timestamp, after=beginning_timestamp)
 
     subs_df = pd.DataFrame(submissions)
     subs_df = subs_df[['title', 'selftext', 'created_utc']]
@@ -59,7 +64,6 @@ def pull_raw_data(subreddit, limit, beginning_day, end_day):
     print(len(subs_df))
     return subs_df
 #all_data = subs_json['data']
-
 
 
 def get_filtered_reddit_data(limit, beginning_day, end_day):
@@ -74,28 +78,28 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
     # Init new dataframe
     df = pd.DataFrame()
     index = -1
-    
+
     for post in all_data.itertuples():
-    
+
         title = str(post[1])
         selftext = str(post[2])
         created_utc = post[3]
 
         if (findall_tickers(title) or findall_tickers(selftext)) and \
-            (not(findall_questions(title) or findall_questions(selftext))):
-            
+                (not(findall_questions(title) or findall_questions(selftext))):
+
             index += 1
-            #censored_title = post['title']  #pf.censor()
+            # censored_title = post['title']  #pf.censor()
             #censored_selftext = post['selftext']
             time = datetime.datetime.fromtimestamp(created_utc)
             ticker_list = findall_tickers(title + " " + selftext)
 
             df = pd.concat(
-                [df, pd.DataFrame({'index' : [index],
-                                'title': [title],
-                                'selftext': [selftext],
-                                'time': [time],
-                                'tickers': [ticker_list]})])
+                [df, pd.DataFrame({'index': [index],
+                                   'title': [title],
+                                   'selftext': [selftext],
+                                   'time': [time],
+                                   'tickers': [ticker_list]})])
     df.to_csv("reddit/reddit_subs_filtered.csv")
 
 
