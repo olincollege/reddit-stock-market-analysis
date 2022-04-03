@@ -44,6 +44,7 @@ def str_create_timestamp(date_str):
         year=year, month=month, day=day).timestamp())
     return timestamp
 
+
 def remove_dupes(ticker_list):
     """
     removes empty strings and repeats
@@ -92,7 +93,6 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
     # the same stock. Start with SPY, our S&P500 ETF and baseline
     existing_tickers = ['SPY']
 
-
     for post in all_data.itertuples():
 
         title = str(post[1])
@@ -117,7 +117,6 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
                 if ticker not in existing_tickers:
                     existing_tickers.append(ticker)
                     new_ticker_list.append(ticker)
-                    
 
             if new_ticker_list:
                 # censored_title = post['title']  #pf.censor()
@@ -133,7 +132,8 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
     return(existing_tickers)
 
 
-unique_ticker_list = get_filtered_reddit_data(100000, "2018-01-01", "2019-01-01")
+unique_ticker_list = get_filtered_reddit_data(
+    100000, "2018-01-01", "2019-01-01")
 
 dataframe = pd.read_csv("reddit/snp500.csv")
 snp_tickers = list(dataframe['Symbol'])
@@ -141,7 +141,7 @@ snp_tickers = list(dataframe['Symbol'])
 matching_tickers = 0
 for ticker in unique_ticker_list:
     if ticker in snp_tickers:
-        matching_tickers+=1
+        matching_tickers += 1
 print(unique_ticker_list)
-print("Number of stocks reccomended by reddit: ", len(unique_ticker_list))
-print("Number of reccomended stocks in the S&P 500: ", matching_tickers)
+print("Number of stocks recommended by reddit: ", len(unique_ticker_list))
+print("Number of recommended stocks in the S&P 500: ", matching_tickers)
