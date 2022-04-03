@@ -6,7 +6,7 @@ import re
 api = PushshiftAPI()
 
 
-def findall_tickers(string):
+def find_tickers(string):
     """
     Searches a string for stock tickers.
 
@@ -19,7 +19,7 @@ def findall_tickers(string):
     return re.findall(r"\$([A-Z]+)", string)
 
 
-def findall_questions(string):
+def find_qmarks(string):
     """
     Searches a string for question marks.
 
@@ -27,9 +27,44 @@ def findall_questions(string):
         string: A string to be searched.
 
     Returns:
-        A list of all the stock tickers in the string.
+        A list of question marks in the string.
     """
-    return re.findall(r"(\?)", string)
+    q_list = re.findall(r"(\?)", string)
+    if q_list:
+        return True
+    return False
+
+
+def find_long(string):
+    """
+    Searches a string for the word long.
+
+    Args:
+        string: A string to be searched.
+
+    Returns:
+        A list of all of the word long as it appears in string.
+    """
+    long_list = re.findall(r'[Ll]ong ', string)
+    if long_list:
+        return True
+    return False
+
+
+def find_short(string):
+    """
+    Searches a string for the word short.
+
+    Args:
+        string: A string to be searched.
+
+    Returns:
+        A list of the word short as it appears in the string.
+    """
+    short_list = re.findall(r'[Ss]hort ', string)
+    if short_list:
+        return True
+    return False
 
 
 def str_create_timestamp(date_str):
@@ -78,7 +113,7 @@ def pull_raw_data(subreddit, limit, beginning_day, end_day):
 def get_filtered_reddit_data(limit, beginning_day, end_day):
     """
     Docstring here
-    creates a csv with only the raw data
+    creates a csv with the filtered data
     """
 
     subreddit = "wallstreetbets"
@@ -100,15 +135,16 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
         created_utc = post[3]
         all_text = title + " " + selftext
 
-        # Filters out all submissions that don't have a stock ticker
-        # Or that contain a question mark
-        # Or don't have the word long
-        # or contain the word short
-        if findall_tickers(all_text) and (not(findall_questions(all_text))) and (re.findall(r'[Ll]ong ', all_text)) and (not(re.findall(r'[Ss]hort ', all_text))):
+        # Removes reddit submissions that don't contain a stock ticker or
+        # the word long.
+        # Removes reddit submissions that contain a question mark or
+        # the word short.
+        if find_tickers(all_text) and (not(find_qmarks(all_text))) and \
+            (find_long(all_text)) and (not(find_short(all_text))):
 
             # Generate a list of all the stock tickers in a post
             #  and remove duplicates
-            ticker_list = findall_tickers(all_text)
+            ticker_list = find_tickers(all_text)
             ticker_list = remove_dupes(ticker_list)
 
             # filter out all but the first mention of each stock ticker
@@ -124,6 +160,8 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
                 # censored_selftext = post['selftext']
                 time = datetime.datetime.fromtimestamp(created_utc)
 
+                # Add specific, relevant information from the reddit submission
+                # to our dataframe.
                 df = pd.concat(
                     [df, pd.DataFrame({'title': [title],
                                        'selftext': [selftext],
@@ -133,7 +171,7 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
     return(existing_tickers)
 
 
-unique_ticker_list = get_filtered_reddit_data(100000, "2018-01-01", "2019-01-01")
+reddit_tickers = get_filtered_reddit_data(100000, "2018-01-01", "2019-01-01")
 
 dataframe = pd.read_csv("reddit/snp500.csv")
 snp_tickers = list(dataframe['Symbol'])
