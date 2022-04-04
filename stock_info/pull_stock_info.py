@@ -6,11 +6,11 @@ from datetime import datetime, timedelta
 def get_alpaca_account():
     """
     Loads the Alpaca credentials and displays the Alpaca account used to make
-    the API requests.
-    
+    the API requests. Will error if the user does not have Alpaca credentials.
+
     Args:
         None.
-        
+
     Returns:
         account: A dictionary containing strings of information about the
         Alpaca account.
@@ -25,13 +25,12 @@ def get_alpaca_account():
 
     API = tradeapi.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
                         APCA_API_BASE_URL, api_version='v2')
-
-
-    #account = API.get_account()
     return API
+
 
 # Global Constants
 API = get_alpaca_account()
+
 
 def get_datetime(start_date, time_period):
     """
@@ -97,7 +96,7 @@ def get_stock_info(ticker_symbol, start_date, time_period):
     dates = get_datetime(start_date, time_period)
     start_date = dates[0]
     end_date = dates[1]
-    
+
     STOCK_DATA = API.get_bars(ticker_symbol, tradeapi.TimeFrame.Day,
                               start_date, end_date, adjustment='raw').df
     STOCK_DATA.to_csv(f'stock_info/data/{ticker_symbol}data.csv')
