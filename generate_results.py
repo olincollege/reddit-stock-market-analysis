@@ -6,6 +6,11 @@ import pandas as pd
 from graphing.graph_stock_info import make_color_plot
 from stock_info.pull_stock_info import get_stock_info, is_valid_ticker
 from reddit.pmaw_api import remove_dupes
+import datetime as dt
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import time as t
 
 
 def str_to_list(list_string):
@@ -146,3 +151,93 @@ def reddit_overall_comparison():
     average_snp_ar = sum(snp_annual_returns) / len(snp_annual_returns)
     print("Average reddit AR: ", average_reddit_ar)
     print("Average S&P 500 AR: ", average_snp_ar)
+
+
+def make_bar_graph():
+    """
+    Graphs the annual return of several Reddit stocks compared to the S&P 500.
+    Must be run after stock data has been collected.
+    """
+    dataframe = pd.read_csv("reddit/reddit_subs_filtered.csv")    
+    reddit_annual_returns = []
+    snp_annual_returns = []
+    tickers_to_be_graphed = []
+    num_stocks = 0
+    for submission in dataframe.itertuples():
+        time = submission.time[:10]
+        tickers = remove_dupes(str_to_list(submission.tickers))
+
+        for ticker in tickers:
+            # This is to prevent extra output from alpaca API calls
+            t.sleep(1)
+            if is_valid_ticker(ticker) and num_stocks < 8:
+                # Read stock data
+                tickers_to_be_graphed.append(ticker)
+                path = (f'stock_info/data/{ticker}data.csv')
+                reddit_annual_returns.append(get_annual_return(path))
+                
+                # Then look at S&P 500 data over the same time period
+                get_stock_info("SPY", time, 365)
+                path = 'stock_info/data/SPYdata.csv'
+                snp_annual_returns.append(get_annual_return(path))
+                # Increment counter
+                num_stocks+=1
+            else:
+                break
+
+    # Graphing section
+
+    x = np.arange(len(tickers_to_be_graphed))  # the label locations
+    width = 0.35  # the width of the bars
+
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(x - width/2, reddit_annual_returns, width, label='Reddit Stock')
+    rects2 = ax.bar(x + width/2, snp_annual_returns, width, label='S&P 500')
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_ylabel('Percent Annual Return')
+    ax.set_title('Reddit Stocks VS S&P 500')
+    ax.legend()
+
+    ax.bar_label(rects1, padding=3, fmt='%.2f')
+    ax.bar_label(rects2, padding=3, fmt='%.2f')
+
+    fig.tight_layout()
+    fig.set_size_inches(12, 6)
+    fig.set_dpi(100)
+    fig.set_facecolor('white')
+
+    plt.show()
+
+
+def compare_stock_plot():
+    """
+    Graph the price of many Reddit stocks over time.
+    Must be run after stock data has been collected.
+    """
+
+    tickers = ['NKE', 'L', 'TSLA', 'SVXY', 'SHOP',
+               'DVN', 'PLNT', 'NVDA', 'CROX', 'GPRO']
+    
+    fig, ax = plt.subplots()
+    for ticker in tickers:
+        path = (f'stock_info/data/{ticker}data.csv')
+
+        dataframe = pd.read_csv(path)
+        x_coords = dataframe['timestamp']
+        y_coords = dataframe['close']
+
+        x_coords = [dt.datetime.strptime(str(value)[0:10],'%Y-%m-%d').date()
+                    for value in x_coords]
+        ax.plot(x_coords, y_coords, label=ticker)
+
+    fig.set_size_inches(12, 6)
+    fig.set_dpi(100)
+    fig.set_facecolor('white')
+
+    ax.set_ylabel('Price in USD')
+    ax.set_xlabel('Time')
+    ax.set_title('Random Spread of Reddit Stocks')
+    ax.legend()
+
+    plt.show()
