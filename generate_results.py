@@ -134,6 +134,7 @@ def reddit_overall_comparison():
         tickers = remove_dupes(str_to_list(submission.tickers))
 
         for ticker in tickers:
+            t.sleep(1.5)
             if is_valid_ticker(ticker):
                 # Collect data on reddit recommended ticker
                 get_stock_info(ticker, time, 365)
@@ -158,7 +159,7 @@ def make_bar_graph():
     Graphs the annual return of several Reddit stocks compared to the S&P 500.
     Must be run after stock data has been collected.
     """
-    dataframe = pd.read_csv("reddit/reddit_subs_filtered.csv")    
+    dataframe = pd.read_csv("reddit/reddit_subs_filtered.csv")
     reddit_annual_returns = []
     snp_annual_returns = []
     tickers_to_be_graphed = []
@@ -175,13 +176,13 @@ def make_bar_graph():
                 tickers_to_be_graphed.append(ticker)
                 path = (f'stock_info/data/{ticker}data.csv')
                 reddit_annual_returns.append(get_annual_return(path))
-                
+
                 # Then look at S&P 500 data over the same time period
                 get_stock_info("SPY", time, 365)
                 path = 'stock_info/data/SPYdata.csv'
                 snp_annual_returns.append(get_annual_return(path))
                 # Increment counter
-                num_stocks+=1
+                num_stocks += 1
             else:
                 break
 
@@ -191,7 +192,8 @@ def make_bar_graph():
     width = 0.35  # the width of the bars
 
     fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width/2, reddit_annual_returns, width, label='Reddit Stock')
+    rects1 = ax.bar(x - width/2, reddit_annual_returns,
+                    width, label='Reddit Stock')
     rects2 = ax.bar(x + width/2, snp_annual_returns, width, label='S&P 500')
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
@@ -218,7 +220,7 @@ def compare_stock_plot():
 
     tickers = ['NKE', 'L', 'TSLA', 'SVXY', 'SHOP',
                'DVN', 'PLNT', 'NVDA', 'CROX', 'GPRO']
-    
+
     fig, ax = plt.subplots()
     for ticker in tickers:
         path = (f'stock_info/data/{ticker}data.csv')
@@ -227,7 +229,7 @@ def compare_stock_plot():
         x_coords = dataframe['timestamp']
         y_coords = dataframe['close']
 
-        x_coords = [dt.datetime.strptime(str(value)[0:10],'%Y-%m-%d').date()
+        x_coords = [dt.datetime.strptime(str(value)[0:10], '%Y-%m-%d').date()
                     for value in x_coords]
         ax.plot(x_coords, y_coords, label=ticker)
 
