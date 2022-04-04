@@ -1,3 +1,7 @@
+"""
+Library to find valid stock tickers.
+"""
+
 import pandas as pd
 from stock_info.pull_stock_info import is_valid_ticker
 
@@ -7,9 +11,9 @@ def str_to_list(list_string):
     a list.
 
     Args:
-        list_string: A string in the format "['item 1', 'item 2'].
+        list_string: A string in the format "['item 1', 'item 2']".
 
-    returns:
+    Returns:
         A list of the string elements from the list string.
     """
     return list_string[2:-2].split("', '")
@@ -40,6 +44,5 @@ def get_reddit_stock_info():
             if ticker in snp_tickers:
                 matching_tickers += 1
 
-    print(valid_stocks)
     print("Number of stocks recommended by reddit: ", len(valid_stocks))
-    print("Number of recommended stocks in the S&P 500: ", matching_tickers)
+    print("Number of recommended stocks in the S&P500: ", matching_tickers)

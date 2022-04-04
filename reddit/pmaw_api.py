@@ -1,7 +1,11 @@
+"""
+Library for pulling and filtering Reddit data.
+"""
+
+import re
+import datetime
 import pandas as pd
 from pmaw import PushshiftAPI
-import datetime
-import re
 
 api = PushshiftAPI()
 
@@ -88,7 +92,7 @@ def str_create_timestamp(date_str):
 
 def remove_dupes(str_list):
     """
-    removes empty strings and repeats from a list of strings.
+    Removes empty strings and repeats from a list of strings.
 
     Args:
         str_list: A list of strings.
@@ -98,7 +102,9 @@ def remove_dupes(str_list):
         elements removed.
     """
     res = []
-    [res.append(x) for x in str_list if x not in res]
+    for string in str_list:
+        if string not in res:
+            res.append(string)
     if '' in res:
         res.remove('')
     return res
@@ -107,14 +113,14 @@ def remove_dupes(str_list):
 def pull_raw_data(subreddit, limit, beginning_day, end_day):
     """
     Uses PMAW pushshift API wrapper to collect reddit Submission data from a
-    specified subreddit. 
+    specified subreddit.
 
     Args:
         subreddit: A string that is the name of the subreddit you want to pull
         data from.
         limit: An int representing the maximum amount of reddit submissions you
         want to collect.
-        Beginning_day: A date represented as a string in "YXXX-MX-DX" format
+        beginning_day: A date represented as a string in "YXXX-MX-DX" format
         that is the beginning of your search time window.
         end_day: A date represented as a string in "YXXX-MX-DX" format
         that is the end of your search time window.
@@ -134,7 +140,6 @@ def pull_raw_data(subreddit, limit, beginning_day, end_day):
     subs_df = subs_df.sort_values(by='created_utc')
     print(len(subs_df))
     return subs_df
-#all_data = subs_json['data']
 
 
 def get_filtered_reddit_data(limit, beginning_day, end_day):
@@ -150,17 +155,15 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
         end_day: A date represented as a string in "YXXX-MX-DX" format
         that is the end of your search time window.
 
-    returns:
+    Returns:
         Creates a csv file containing all key elements of the reddit
         submissions that met our search parameters.
     """
 
-    subreddit = "wallstreetbets"
-
-    all_data = pull_raw_data(subreddit, limit, beginning_day, end_day)
+    all_data = pull_raw_data("wallstreetbets", limit, beginning_day, end_day)
 
     # Init new dataframe
-    df = pd.DataFrame()
+    dataframe = pd.DataFrame()
 
     # Create a list of exixting tickers to remove posts talking about
     # the same stock. Start with SPY, our S&P500 ETF and baseline
@@ -182,8 +185,8 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
         # the word long.
         # Removes reddit submissions that contain a question mark or
         # the word short.
-        if find_tickers(all_text) and (not(find_qmarks(all_text))) and \
-                (find_long(all_text)) and (not(find_short(all_text))):
+        if find_tickers(all_text) and not find_qmarks(all_text) and \
+                find_long(all_text) and not find_short(all_text):
 
             # Generate a list of all the stock tickers in a post
             #  and remove duplicates
@@ -204,9 +207,9 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
 
                 # Add specific, relevant information from the reddit submission
                 # to our dataframe.
-                df = pd.concat(
-                    [df, pd.DataFrame({'title': [title],
-                                       'selftext': [selftext],
-                                       'time': [time],
-                                       'tickers': [new_ticker_list]})])
-    df.to_csv("reddit/reddit_subs_filtered.csv")
+                dataframe = pd.concat(
+                    [dataframe, pd.DataFrame({'title': [title],
+                                              'selftext': [selftext],
+                                              'time': [time],
+                                              'tickers': [new_ticker_list]})])
+    dataframe.to_csv("reddit/reddit_subs_filtered.csv")
