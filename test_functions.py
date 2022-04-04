@@ -2,6 +2,7 @@ import datetime
 import pytest
 from generate_results import str_to_list
 from graphing.graph_stock_info import days_since_epoch
+from reddit.pmaw_api import str_create_timestamp
 
 # Scraping and analyzing Alpaca data
 
@@ -21,9 +22,32 @@ find_tickers_cases = [
 
 
 # TODO: pmaw_api find_qmarks
+find_qmarks_cases = [
+    # Check that any string with a question mark returns True.
+    ('????!!??', True),
+    # Check that any string without a question mark returns False.
+    ('Hello!', False),
+]
 # TODO: pmaw_api find_long
+find_long_cases = [
+    # Check that any string with the word "long" returns True.
+    ('This is so long stocking.', True),
+    # Check that any string without the word "long" returns False.
+    ('This is so short.', False),
+]
 # TODO: pmaw_api find_short
+find_short_cases = [
+    # Check that any string that contains the word "short" returns True.
+    ('I am not short.', True),
+    # Check that any string without "short" returns False.
+    ('I am not tall.', False),
+]
 # TODO: pmaw_api str_create_timestamp
+str_create_timestamp_cases = [
+    # Check that an inputted string in datetime format will be outputted as a
+    # datetime date that is an integer.
+    (['2018-01-01'], 1514782800),
+]
 # TODO: pmaw_api remove_dupes
 remove_dupes_cases = [
     # Check that empty strings in a list are removed.
@@ -35,6 +59,9 @@ remove_dupes_cases = [
 days_since_epoch_cases = [
     # Check that the number of days since the beginning of the epoch is correct.
     (datetime.date(1970, 1, 11), 10),
+    # Check that if the inputted date is before the beginning of the epoch, a
+    # negative integer is returned.
+    (datetime.date(1960, 1, 11), -3653),
 ]
 # TODO: graph_stock_info date_from_epoch_time
 date_from_epoch_time_cases = [
