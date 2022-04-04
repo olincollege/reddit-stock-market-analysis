@@ -5,6 +5,7 @@ Library to find valid stock tickers.
 import pandas as pd
 from stock_info.pull_stock_info import is_valid_ticker
 
+
 def str_to_list(list_string):
     """
     Takes a string that is formatted like a list of strings and converts it to
@@ -19,9 +20,16 @@ def str_to_list(list_string):
     return list_string[2:-2].split("', '")
 
 
-def get_reddit_stock_info():
+def get_valid_tickers():
     """
-    Doctring here
+    Finds all of the valid ticker symbols from Reddit data and the S&P500.
+
+    Args:
+        None. Reads reddit/snp500.csv and reddit/reddit_subs_filtered.csv.
+
+    Returns:
+        None. Prints the number of valid recommended stocks from Reddit and
+        from the S&P500.
     """
     # Pull S&P 500 stock ticker list from csv file
     dataframe = pd.read_csv("reddit/snp500.csv")
@@ -32,12 +40,13 @@ def get_reddit_stock_info():
 
     matching_tickers = 0
     valid_stocks = []
+
     # itertuples maintains data format, but lists become strings
     for submission in dataframe.itertuples():
 
         ticker_str = submission.tickers
         tickers = str_to_list(ticker_str)
-        
+
         for ticker in tickers:
             if is_valid_ticker(ticker):
                 valid_stocks.append(ticker)
