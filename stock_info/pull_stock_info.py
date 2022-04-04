@@ -61,10 +61,10 @@ def get_datetime(start_date, time_period):
 
 def is_valid_ticker(ticker):
     """
-    Checks if a ticker symbol is valid
+    Checks if a ticker symbol is valid.
 
     Args:
-        ticker: A ticker symbol
+        ticker: A ticker symbol.
 
     Returns:
         True if the ticker is valid, False otherwise.
