@@ -6,7 +6,7 @@ import re
 api = PushshiftAPI()
 
 
-def findall_tickers(string):
+def find_tickers(string):
     """
     Searches a string for stock tickers.
 
@@ -19,7 +19,7 @@ def findall_tickers(string):
     return re.findall(r"\$([A-Z]+)", string)
 
 
-def findall_questions(string):
+def find_qmarks(string):
     """
     Searches a string for question marks.
 
@@ -27,15 +27,56 @@ def findall_questions(string):
         string: A string to be searched.
 
     Returns:
-        A list of all the stock tickers in the string.
+        true if the string contains a question mark, False otherwise.
     """
-    return re.findall(r"(\?)", string)
+    q_list = re.findall(r"(\?)", string)
+    if q_list:
+        return True
+    return False
+
+
+def find_long(string):
+    """
+    Searches a string for the word long.
+
+    Args:
+        string: A string to be searched.
+
+    Returns:
+        True if the string contains long, False otherwise.
+    """
+    long_list = re.findall(r'[Ll]ong ', string)
+    if long_list:
+        return True
+    return False
+
+
+def find_short(string):
+    """
+    Searches a string for the word short.
+
+    Args:
+        string: A string to be searched.
+
+    Returns:
+        True if the string contains short, False otherwise.
+    """
+    short_list = re.findall(r'[Ss]hort ', string)
+    if short_list:
+        return True
+    return False
 
 
 def str_create_timestamp(date_str):
     """
-    Docstring here
-    The format of date_str will always be "XXXX-XX-XX"
+    Creates a datetime timestamp from a date.
+
+    Args:
+        date_str: A string in format "YXXX-MX-DX" to be converted to a
+        timestamp.
+
+    returns:
+        An integer timestamp as defined by datetime.
     """
     year = int(date_str[0:4])
     month = int(date_str[5:7])
@@ -45,12 +86,19 @@ def str_create_timestamp(date_str):
     return timestamp
 
 
-def remove_dupes(ticker_list):
+def remove_dupes(str_list):
     """
-    removes empty strings and repeats
+    removes empty strings and repeats from a list of strings.
+
+    Args:
+        str_list: A list of strings.
+
+    Returns:
+        The original list of strings with any repeat elements or empty string
+        elements removed.
     """
     res = []
-    [res.append(x) for x in ticker_list if x not in res]
+    [res.append(x) for x in str_list if x not in res]
     if '' in res:
         res.remove('')
     return res
@@ -58,8 +106,21 @@ def remove_dupes(ticker_list):
 
 def pull_raw_data(subreddit, limit, beginning_day, end_day):
     """
+    Uses PMAW pushshift API wrapper to collect reddit Submission data from a
+    specified subreddit. 
+
+    Args:
+        subreddit: A string that is the name of the subreddit you want to pull
+        data from.
+        limit: An int representing the maximum amount of reddit submissions you
+        want to collect.
+        Beginning_day: A date represented as a string in "YXXX-MX-DX" format
+        that is the beginning of your search time window.
+        end_day: A date represented as a string in "YXXX-MX-DX" format
+        that is the end of your search time window.
+    
     Returns:
-        subs_df: A dataframe containing the titles, body text, and date written
+        A dataframe containing the titles, body text, and date written
         of Reddit posts.
     """
     beginning_timestamp = str_create_timestamp(beginning_day)
@@ -78,8 +139,20 @@ def pull_raw_data(subreddit, limit, beginning_day, end_day):
 
 def get_filtered_reddit_data(limit, beginning_day, end_day):
     """
-    Docstring here
-    creates a csv with only the raw data
+    Pulls data from /r/wallstreetbets over a specified time interval and
+    filters out posts that don't meet specific parameters.
+
+    Args:
+        limit: An int representing the maximum amount of reddit submissions you
+        want to collect.
+        Beginning_day: A date represented as a string in "YXXX-MX-DX" format
+        that is the beginning of your search time window.
+        end_day: A date represented as a string in "YXXX-MX-DX" format
+        that is the end of your search time window.
+
+    returns:
+        Creates a csv file containing all key elements of the reddit
+        submissions that met our search parameters.
     """
 
     subreddit = "wallstreetbets"
@@ -93,22 +166,28 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
     # the same stock. Start with SPY, our S&P500 ETF and baseline
     existing_tickers = ['SPY']
 
+    # Makes each row in the dataframe a tuple
     for post in all_data.itertuples():
 
-        title = str(post[1])
-        selftext = str(post[2])
-        created_utc = post[3]
+        # post[0] is an index added by the itertuples function
+        title = str(post.title)
+        selftext = str(post.selftext)
+        created_utc = post.created_utc
+
+        # Combine the title and text for string searches. Must separate with
+        # space to prevent first letter of text being added to ticker in title.
         all_text = title + " " + selftext
 
-        # Filters out all submissions that don't have a stock ticker
-        # Or that contain a question mark
-        # Or don't have the word long
-        # or contain the word short
-        if findall_tickers(all_text) and (not(findall_questions(all_text))) and (re.findall(r'[Ll]ong ', all_text)) and (not(re.findall(r'[Ss]hort ', all_text))):
+        # Removes reddit submissions that don't contain a stock ticker or
+        # the word long.
+        # Removes reddit submissions that contain a question mark or
+        # the word short.
+        if find_tickers(all_text) and (not(find_qmarks(all_text))) and \
+            (find_long(all_text)) and (not(find_short(all_text))):
 
             # Generate a list of all the stock tickers in a post
             #  and remove duplicates
-            ticker_list = findall_tickers(all_text)
+            ticker_list = find_tickers(all_text)
             ticker_list = remove_dupes(ticker_list)
 
             # filter out all but the first mention of each stock ticker
@@ -123,25 +202,11 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
                 # censored_selftext = post['selftext']
                 time = datetime.datetime.fromtimestamp(created_utc)
 
+                # Add specific, relevant information from the reddit submission
+                # to our dataframe.
                 df = pd.concat(
                     [df, pd.DataFrame({'title': [title],
                                        'selftext': [selftext],
                                        'time': [time],
                                        'tickers': [new_ticker_list]})])
     df.to_csv("reddit/reddit_subs_filtered.csv")
-    return(existing_tickers)
-
-
-unique_ticker_list = get_filtered_reddit_data(
-    100000, "2018-01-01", "2019-01-01")
-
-dataframe = pd.read_csv("reddit/snp500.csv")
-snp_tickers = list(dataframe['Symbol'])
-
-matching_tickers = 0
-for ticker in unique_ticker_list:
-    if ticker in snp_tickers:
-        matching_tickers += 1
-print(unique_ticker_list)
-print("Number of stocks recommended by reddit: ", len(unique_ticker_list))
-print("Number of recommended stocks in the S&P 500: ", matching_tickers)
