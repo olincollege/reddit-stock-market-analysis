@@ -1,10 +1,11 @@
-import requests
+"""
+
+"""
 import json
-import pandas as pd
-import datetime
 import re
-#from profanity_filter import ProfanityFilter
-#pf = ProfanityFilter()
+import requests
+import datetime
+import pandas as pd
 
 
 def get_posts_for_time_period(sub, beginning, end=int(datetime.datetime.now(

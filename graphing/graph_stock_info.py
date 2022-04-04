@@ -1,10 +1,13 @@
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
+"""
+Library for graphing a stock's price over time.
+"""
+
 import datetime as dt
+import numpy as np
+import pandas as pd
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
-
+import matplotlib.pyplot as plt
 
 def days_since_epoch(date):
     """
@@ -17,7 +20,7 @@ def days_since_epoch(date):
     Returns:
         The number of days, in integer form, since January 1, 1970.
     """
-    return (date - dt.date(1970,1,1)).days
+    return (date - dt.date(1970, 1, 1)).days
 
 
 def date_from_epoch_time(num_days):
@@ -33,7 +36,7 @@ def date_from_epoch_time(num_days):
         The datetime.date object representing the date that is num_days days
         away from January 1, 1970.
     """
-    return (dt.date(1970,1,1) + dt.timedelta(num_days))
+    return dt.date(1970, 1, 1) + dt.timedelta(num_days)
 
 
 def make_color_plot(path, ticker_symbol):
@@ -59,7 +62,7 @@ def make_color_plot(path, ticker_symbol):
     y_coords = list(dataframe['close'])
 
     # Convert timestamps to date objects
-    x_coords = [dt.datetime.strptime(str(value)[0:10],'%Y-%m-%d').date() for
+    x_coords = [dt.datetime.strptime(str(value)[0:10], '%Y-%m-%d').date() for
                 value in x_coords]
 
     epoch_offset = days_since_epoch(x_coords[0])
@@ -70,7 +73,7 @@ def make_color_plot(path, ticker_symbol):
     # but time continues.
     for index in range(days_covered - 1):
         if (days_since_epoch(x_coords[index]) != days_since_epoch(
-            x_coords[index+1]) - 1):
+                x_coords[index+1]) - 1):
             x_coords.insert(index + 1, date_from_epoch_time(
                 days_since_epoch(x_coords[index]) + 1))
             y_coords.insert(index + 1, y_coords[index])
@@ -79,7 +82,7 @@ def make_color_plot(path, ticker_symbol):
     x_coords_ints = np.linspace(epoch_offset, epoch_offset + days_covered,
                                 len(x_coords))
 
-    # Get the first derivative of our data to use when 
+    # Get the first derivative of our data to use when
     # determining the color of the line segment
     slope = np.diff(y_coords)
 
@@ -87,8 +90,8 @@ def make_color_plot(path, ticker_symbol):
     colormap = ListedColormap(['r', 'g'])
     norm = BoundaryNorm([-1, 0], colormap.N)
 
-    points = np.array([x_coords_ints, y_coords]).T.reshape(-1, 1, 2)
-    segments = np.concatenate([points[:-1], points[1:]], axis=1)
+    points = np.array([x_coords_ints, y_coords]).T.reshape((-1, 1, 2))
+    segments = np.concatenate((points[:-1], points[1:]), axis=1)
 
     # Create the line collection object, setting the colormapping parameters.
     # Have to set the actual values used for colormapping separately.
@@ -97,8 +100,8 @@ def make_color_plot(path, ticker_symbol):
     line_collection.set_linewidth(2)
 
     # Make the background of the graph white so we can read text
-    # in dark mode. Must be first. 
-    plt.figure(figsize=(12,6), dpi= 100, facecolor="white")
+    # in dark mode. Must be first.
+    plt.figure(figsize=(12, 6), dpi=100, facecolor="white")
 
     # Add the colored line segments to the graph
     plt.gca().add_collection(line_collection)
@@ -106,5 +109,5 @@ def make_color_plot(path, ticker_symbol):
     plt.xlabel("Date")
     plt.ylabel("Price (USD)")
     plt.title(f"{ticker_symbol}")
-    plt.plot(x_coords,y_coords, ".", color = 'black', markersize = 1)
+    plt.plot(x_coords, y_coords, ".", color='black', markersize=1)
     plt.show()
