@@ -14,7 +14,7 @@ def str_to_list(list_string):
     a list.
 
     Args:
-        list_string: A string in the format "['item 1', 'item 2'].
+        list_string: A string in the format "['item 1', 'item 2']".
 
     returns:
         A list of the string elements from the list string.
