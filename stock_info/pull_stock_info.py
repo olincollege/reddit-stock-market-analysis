@@ -3,10 +3,9 @@ This library uses the Alpaca Market API to obtain stock data given a start and
 end date, and checks whether stock tickers are valid and can be found on
 Alpaca Market.
 """
-import alpaca_trade_api as tradeapi
-import pandas as pd
 import json
 from datetime import datetime, timedelta
+import alpaca_trade_api as tradeapi
 
 
 def get_alpaca_account():
@@ -106,4 +105,3 @@ def get_stock_info(ticker_symbol, start_date, time_period):
     stock_data = API.get_bars(ticker_symbol, tradeapi.TimeFrame.Day,
                               start_date, end_date, adjustment='raw').df
     stock_data.to_csv(f'stock_info/data/{ticker_symbol}data.csv')
-    return
