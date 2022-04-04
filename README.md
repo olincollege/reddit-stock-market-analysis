@@ -16,6 +16,7 @@ To be able to run these files, we installed the following libraries and packages
 * `pip install pandas`
 * `pip install pmaw`
 * `pip install re`
+* `pip install time`
 
 We were required to create an account and credentials to access the Alpaca Markets API. Our credentials are in a file that is ignored by Git, but they are still necessary to pull data. The website for the Alpaca Market API is linked: https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/. The GitHub also has more information on how to set up using the API: https://github.com/alpacahq/alpaca-trade-api-python. The PMAW API does not require credentials.
 
