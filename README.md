@@ -17,3 +17,5 @@ To be able to run these files, you should pip install the following libraries an
 * `pip install re`
 
 In order to set up the Alpaca Market API, you need to set up credentials and log in. Our credentials are in a file that is ignored by Git. The website for the Alpaca Market API is linked: https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/. The GitHub also has more information on how to set up using the API: https://github.com/alpacahq/alpaca-trade-api-python. The PMAW API does not require credentials.
+
+Regarding our data visualizations, we used matplotlib to generate a few different kinds of graphs. We created line graphs (using the LineCollection, ColorMap, and BoundaryNorm functions to determine whether a stock price was increasing or decreasing) and bar graphs to showcase the difference in Reddit and the S&P 500 stock prices.
