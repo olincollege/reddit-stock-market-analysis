@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import matplotlib.dates as mdates
 import datetime as dt
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
+
 
 def days_since_epoch(date):
     """
@@ -18,6 +18,7 @@ def days_since_epoch(date):
         The number of days, in integer form, since January 1, 1970.
     """
     return (date - dt.date(1970,1,1)).days
+
 
 def date_from_epoch_time(num_days):
     """
@@ -34,6 +35,7 @@ def date_from_epoch_time(num_days):
     """
     return (dt.date(1970,1,1) + dt.timedelta(num_days))
 
+
 def make_color_plot(path, ticker_symbol):
     """
     Create a plot showing the price of a specified stock over time, where
@@ -42,7 +44,7 @@ def make_color_plot(path, ticker_symbol):
     Args:
         path: A string containing the path to the CSV file produced by
         stock_info.get_stock_info.
-        ticker_symbol: A string of 1-4 uppercase letters representing the
+        ticker_symbol: A string of 1-6 uppercase letters representing the
         ticker symbol for the desired stock.
 
     Returns:
@@ -106,4 +108,3 @@ def make_color_plot(path, ticker_symbol):
     plt.title(f"{ticker_symbol}")
     plt.plot(x_coords,y_coords, ".", color = 'black', markersize = 1)
     plt.show()
-    return

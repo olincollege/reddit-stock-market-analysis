@@ -3,6 +3,7 @@ import pandas as pd
 import json
 from datetime import datetime, timedelta
 
+
 def get_alpaca_account():
     """
     Loads the Alpaca credentials and displays the Alpaca account used to make
