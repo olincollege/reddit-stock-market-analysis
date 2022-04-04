@@ -1,14 +1,10 @@
-"""
-Test library functions to identify and graph the prices of Reddit-recommended
-stocks.
-"""
 import datetime
 import pytest
-
 from generate_results import str_to_list
-from graphing.graph_stock_info import (days_since_epoch, date_from_epoch_time)
-from reddit.pmaw_api import (find_qmarks, find_long, find_short,
-                             str_create_timestamp)
+from graphing.graph_stock_info import days_since_epoch
+
+# Scraping and analyzing Alpaca data
+
 from stock_info.pull_stock_info import get_datetime
 
 # TODO: pmaw_api find tickers
@@ -28,7 +24,7 @@ find_tickers_cases = [
 # TODO: pmaw_api find_long
 # TODO: pmaw_api find_short
 # TODO: pmaw_api str_create_timestamp
-# TODO: pmaw_api remove_dupes_cases
+# TODO: pmaw_api remove_dupes
 remove_dupes_cases = [
     # Check that empty strings in a list are removed.
     (['hello', '', 'hi'], ['hello', 'hi']),
@@ -68,4 +64,3 @@ get_datetime_cases = [
     ("2021-01-01", 365, [datetime.date(2021, 1, 1),
                          datetime.date(2022, 1, 1)]),
 ]
-
