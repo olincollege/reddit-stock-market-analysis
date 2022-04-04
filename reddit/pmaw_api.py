@@ -118,7 +118,7 @@ def pull_raw_data(subreddit, limit, beginning_day, end_day):
         that is the beginning of your search time window.
         end_day: A date represented as a string in "YXXX-MX-DX" format
         that is the end of your search time window.
-    
+
     Returns:
         A dataframe containing the titles, body text, and date written
         of Reddit posts.
@@ -183,7 +183,7 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
         # Removes reddit submissions that contain a question mark or
         # the word short.
         if find_tickers(all_text) and (not(find_qmarks(all_text))) and \
-            (find_long(all_text)) and (not(find_short(all_text))):
+                (find_long(all_text)) and (not(find_short(all_text))):
 
             # Generate a list of all the stock tickers in a post
             #  and remove duplicates

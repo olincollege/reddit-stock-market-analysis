@@ -9,10 +9,11 @@ We make use of multiple APIs in order to obtain data from Reddit and Alpaca Mark
 ## Set Up
 
 To be able to run these files, you should pip install the following libraries and packages:
+* `pip install alpaca_trade_api`
+* `pip install datetime`
+* `pip install matplotlib`
 * `pip install pandas`
 * `pip install pmaw`
-* `pip install datetime`
 * `pip install re`
-* `pip install alpaca_trade_api`
 
-In order to setup the Alpaca Market API, you need to set up credentials in order to log in. Our credentials are in a file that is ignored by Git. The website for the Alpaca Market API is linked: https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/. The GitHub also has more information on how to set up using the API: https://github.com/alpacahq/alpaca-trade-api-python. 
+In order to setup the Alpaca Market API, you need to set up credentials in order to log in. Our credentials are in a file that is ignored by Git. The website for the Alpaca Market API is linked: https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/. The GitHub also has more information on how to set up using the API: https://github.com/alpacahq/alpaca-trade-api-python. The PMAW API does not require credentials.
