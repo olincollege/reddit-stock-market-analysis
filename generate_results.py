@@ -1,3 +1,8 @@
+"""
+This library is used to create graphs of a specific stock price and the SPY
+price starting from a specific date and ending after one year.
+"""
+import pandas as pd
 from graphing.graph_stock_info import make_color_plot
 from stock_info.pull_stock_info import get_stock_info, is_valid_ticker
 from reddit.pmaw_api import remove_dupes
@@ -49,7 +54,7 @@ def get_reddit_stock_info():
     Tallies all of the valid ticker symbols from our csv file filled with
     reddit submissions. Prints a list of all of the valid ticker symbols as
     well as the count of unique symbols and how many of the recommended stocks
-    are in the S&P 500. 
+    are in the S&P 500.
     """
     # Pull S&P 500 stock ticker list from csv file
     dataframe = pd.read_csv("reddit/snp500.csv")
@@ -65,7 +70,7 @@ def get_reddit_stock_info():
 
         ticker_str = submission.tickers
         tickers = str_to_list(ticker_str)
-        
+
         for ticker in tickers:
             if is_valid_ticker(ticker):
                 valid_stocks.append(ticker)
@@ -90,7 +95,7 @@ def generate_results(ticker, date):
 
     Prints a graph and the annual return of both the selected stock and the
     SPY etf, which copies the S&P 500 and is our proxy for the general movement
-    of the stock market. 
+    of the stock market.
     """
     # Pull data from alpaca for the stock from the reddit post
     get_stock_info(ticker, date, 365)
@@ -118,9 +123,9 @@ def reddit_overall_comparison():
     Finds the annual return of each stock reddit recommended starting the date
     that the submission was posted. Finds the annual return of SPY over the
     same time periods. Averages the Reddit annual return and the S&P annual
-    return and prints those average values. 
+    return and prints those average values.
     """
-    dataframe = pd.read_csv("reddit/reddit_subs_filtered.csv")    
+    dataframe = pd.read_csv("reddit/reddit_subs_filtered.csv")
     reddit_annual_returns = []
     snp_annual_returns = []
 
@@ -133,14 +138,14 @@ def reddit_overall_comparison():
                 # Collect data on reddit recommended ticker
                 get_stock_info(ticker, time, 365)
                 path = (f'stock_info/data/{ticker}data.csv')
-                ar = get_annual_return(path)
-                reddit_annual_returns.append(ar)
-                
+                annual_return = get_annual_return(path)
+                reddit_annual_returns.append(annual_return)
+
                 # Then look at S&P 500 data over the same time period
                 get_stock_info("SPY", time, 365)
                 path = 'stock_info/data/SPYdata.csv'
-                ar = get_annual_return(path)
-                snp_annual_returns.append(ar)
+                annual_return = get_annual_return(path)
+                snp_annual_returns.append(annual_return)
 
     average_reddit_ar = sum(reddit_annual_returns) / len(reddit_annual_returns)
     average_snp_ar = sum(snp_annual_returns) / len(snp_annual_returns)

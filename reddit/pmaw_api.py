@@ -209,7 +209,7 @@ def get_filtered_reddit_data(limit, beginning_day, end_day):
                 # to our dataframe.
                 dataframe = pd.concat(
                     [dataframe, pd.DataFrame({'title': [title],
-                                       'selftext': [selftext],
-                                       'time': [time],
-                                       'tickers': [new_ticker_list]})])
+                                              'selftext': [selftext],
+                                              'time': [time],
+                                              'tickers': [new_ticker_list]})])
     dataframe.to_csv("reddit/reddit_subs_filtered.csv")
