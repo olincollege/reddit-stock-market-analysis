@@ -22,10 +22,6 @@ def get_alpaca_account():
     APCA_API_SECRET_KEY = creds['CLIENT_SECRET']
 
     APCA_API_BASE_URL = "https://paper-API.alpaca.markets"
-    APCA_API_DATA_URL = "https://data.alpaca.markets"
-    APCA_RETRY_MAX = 3
-    APCA_RETRY_WAIT = 3
-    APCA_RETRY_CODES = 429504
 
     API = tradeapi.REST(APCA_API_KEY_ID, APCA_API_SECRET_KEY,
                         APCA_API_BASE_URL, api_version='v2')
@@ -57,6 +53,28 @@ def get_datetime(start_date, time_period):
     delta = timedelta(days=time_period)
     end_date = start_date + delta
     return [start_date, end_date]
+
+
+def is_valid_ticker(ticker):
+    """
+    Checks if a ticker symbol is valid
+
+    Args:
+        ticker: A ticker symbol
+
+    Returns:
+        True if the ticker is valid, False otherwise.
+    """
+    # Look for data from one day to see if we get results
+    dates = get_datetime("2018-01-01", 1)
+    start_date = dates[0]
+    end_date = dates[1]
+
+    any_data = API.get_bars(ticker, tradeapi.TimeFrame.Day,
+                 start_date, end_date, adjustment='raw')
+    if any_data:
+        return True
+    return False
 
 
 def get_stock_info(ticker_symbol, start_date, time_period):
